@@ -17,8 +17,11 @@
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings=0",
     "start:api": "npm run start --workspace @simple-order/api",
+    "test": "npm run test:api && npm run test:web",
     "test:api": "npm run test --workspace @simple-order/api",
-    "typecheck": "tsc -p apps/api/tsconfig.json --noEmit && tsc -p packages/shared/tsconfig.json --noEmit && tsc -p apps/web/tsconfig.json --noEmit"
+    "test:web": "npm run test --workspace @simple-order/web",
+    "typecheck": "tsc -p apps/api/tsconfig.json --noEmit && tsc -p packages/shared/tsconfig.json --noEmit && tsc -p apps/web/tsconfig.json --noEmit",
+    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "engines": {
     "node": ">=20.0.0",
