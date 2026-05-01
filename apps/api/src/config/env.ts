@@ -27,6 +27,11 @@ const environmentSchema = z.object({
   NODE_ENV: z
     .enum(['development', 'test', 'production'])
     .default('development'),
+  ORDER_APPROVAL_THRESHOLD_CENTS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(5_000),
 });
 
 export interface AppConfig {
@@ -35,6 +40,9 @@ export interface AppConfig {
     readonly allowedOrigins: readonly string[];
   };
   readonly nodeEnv: 'development' | 'test' | 'production';
+  readonly orders: {
+    readonly approvalThresholdCents: number;
+  };
   readonly server: {
     readonly host: string;
     readonly jsonBodyLimit: string;
@@ -63,6 +71,10 @@ export function loadConfig(
         : parsedEnvironment.data.API_CORS_ORIGINS,
     },
     nodeEnv: parsedEnvironment.data.NODE_ENV,
+    orders: {
+      approvalThresholdCents:
+        parsedEnvironment.data.ORDER_APPROVAL_THRESHOLD_CENTS,
+    },
     server: {
       host: parsedEnvironment.data.API_HOST,
       jsonBodyLimit: parsedEnvironment.data.API_JSON_BODY_LIMIT,

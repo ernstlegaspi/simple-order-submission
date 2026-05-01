@@ -2,6 +2,10 @@ import { v7 as uuidv7 } from 'uuid';
 
 import type { AppConfig } from '../config/env.js';
 import { createLogger, type Logger } from '../infrastructure/logging/logger.js';
+import {
+  createOrdersModule,
+  type OrdersModule,
+} from '../orders/create-orders-module.js';
 
 export interface Clock {
   now(): Date;
@@ -16,19 +20,30 @@ export interface ApplicationContext {
   readonly config: AppConfig;
   readonly idGenerator: IdGenerator;
   readonly logger: Logger;
+  readonly orders: OrdersModule;
 }
 
 export function createApplicationContext(
   config: AppConfig,
 ): ApplicationContext {
+  const clock: Clock = {
+    now: () => new Date(),
+  };
+  const idGenerator: IdGenerator = {
+    create: () => uuidv7(),
+  };
+  const logger = createLogger();
+
   return {
-    clock: {
-      now: () => new Date(),
-    },
+    clock,
     config,
-    idGenerator: {
-      create: () => uuidv7(),
-    },
-    logger: createLogger(),
+    idGenerator,
+    logger,
+    orders: createOrdersModule({
+      clock,
+      config,
+      idGenerator,
+      logger,
+    }),
   };
 }
