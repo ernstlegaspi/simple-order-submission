@@ -23,27 +23,41 @@ export interface ApplicationContext {
   readonly orders: OrdersModule;
 }
 
+interface ApplicationContextOverrides {
+  readonly clock?: Clock;
+  readonly idGenerator?: IdGenerator;
+  readonly logger?: Logger;
+  readonly orders?: OrdersModule;
+}
+
 export function createApplicationContext(
   config: AppConfig,
+  overrides: ApplicationContextOverrides = {},
 ): ApplicationContext {
-  const clock: Clock = {
-    now: () => new Date(),
-  };
-  const idGenerator: IdGenerator = {
-    create: () => uuidv7(),
-  };
-  const logger = createLogger();
+  const clock =
+    overrides.clock ??
+    ({
+      now: () => new Date(),
+    } satisfies Clock);
+  const idGenerator =
+    overrides.idGenerator ??
+    ({
+      create: () => uuidv7(),
+    } satisfies IdGenerator);
+  const logger = overrides.logger ?? createLogger();
 
   return {
     clock,
     config,
     idGenerator,
     logger,
-    orders: createOrdersModule({
-      clock,
-      config,
-      idGenerator,
-      logger,
-    }),
+    orders:
+      overrides.orders ??
+      createOrdersModule({
+        clock,
+        config,
+        idGenerator,
+        logger,
+      }),
   };
 }

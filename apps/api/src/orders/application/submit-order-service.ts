@@ -1,8 +1,7 @@
 import type { Clock, IdGenerator } from '../../core/application-context.js';
-import {
-  InvalidOrderSubmissionError,
-  UnknownOrderItemsError,
-} from '../domain/errors.js';
+import type { SubmitOrderCommand } from '../contracts/order-http-contract.js';
+import { submitOrderCommandSchema } from '../contracts/order-http-contract.js';
+import { UnknownOrderItemsError } from '../domain/errors.js';
 import type {
   Order,
   OrderCustomer,
@@ -16,17 +15,6 @@ import type {
 } from '../domain/order-decision-policy.js';
 import type { OrderItemCatalog } from '../domain/order-item-catalog.js';
 import type { OrderRepository } from '../domain/order-repository.js';
-
-export interface SubmitOrderCommand {
-  readonly customer: {
-    readonly email: string;
-    readonly name: string;
-  };
-  readonly items: readonly {
-    readonly id: string;
-    readonly quantity: number;
-  }[];
-}
 
 export type SubmitOrderResult =
   | {
@@ -74,7 +62,9 @@ export class SubmitOrderService {
   public async execute(
     command: SubmitOrderCommand,
   ): Promise<SubmitOrderResult> {
-    const normalizedCommand = normalizeCommand(command);
+    const normalizedCommand = normalizeCommand(
+      submitOrderCommandSchema.parse(command),
+    );
     const pricedItems = await this.priceItems(normalizedCommand.items);
     const total = pricedItems.reduce(
       (runningTotal, item) => runningTotal + item.lineTotal,
@@ -171,47 +161,17 @@ function buildOrder(input: {
 function normalizeCommand(
   command: SubmitOrderCommand,
 ): NormalizedSubmitOrderCommand {
-  const issues: string[] = [];
   const normalizedItems = new Map<string, number>();
-  const customerName = command.customer.name.trim();
-  const customerEmail = command.customer.email.trim();
+  const customerName = command.customer.name;
+  const customerEmail = command.customer.email;
 
-  if (customerName.length === 0) {
-    issues.push('customer.name is required.');
-  }
-
-  if (customerEmail.length === 0) {
-    issues.push('customer.email is required.');
-  }
-
-  if (command.items.length === 0) {
-    issues.push('At least one item must be provided.');
-  }
-
-  for (const [index, item] of command.items.entries()) {
+  for (const item of command.items) {
     const itemId = item.id.trim();
-
-    if (itemId.length === 0) {
-      issues.push(`items[${index}].id is required.`);
-    }
-
-    if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
-      issues.push(`items[${index}].quantity must be a positive integer.`);
-      continue;
-    }
-
-    if (itemId.length === 0) {
-      continue;
-    }
 
     normalizedItems.set(
       itemId,
       (normalizedItems.get(itemId) ?? 0) + item.quantity,
     );
-  }
-
-  if (issues.length > 0) {
-    throw new InvalidOrderSubmissionError(issues);
   }
 
   return {

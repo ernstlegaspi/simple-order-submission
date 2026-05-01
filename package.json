@@ -15,6 +15,7 @@
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings=0",
     "start:api": "npm run start --workspace @simple-order/api",
+    "test:api": "npm run test --workspace @simple-order/api",
     "typecheck": "tsc -p apps/api/tsconfig.json --noEmit && tsc -p packages/shared/tsconfig.json --noEmit && tsc -p apps/web/tsconfig.json --noEmit"
   },
   "engines": {

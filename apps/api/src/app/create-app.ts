@@ -3,8 +3,13 @@ import express from 'express';
 import helmet from 'helmet';
 
 import type { ApplicationContext } from '../core/application-context.js';
+import {
+  createErrorHandlerMiddleware,
+  createNotFoundMiddleware,
+} from '../http/middleware/error-handler-middleware.js';
 import { createHttpLoggingMiddleware } from '../http/middleware/http-logging-middleware.js';
 import { createRequestContextMiddleware } from '../http/middleware/request-context-middleware.js';
+import { createOrdersRouter } from '../orders/http/create-orders-router.js';
 
 export function createApp(context: ApplicationContext): express.Express {
   const app = express();
@@ -30,12 +35,10 @@ export function createApp(context: ApplicationContext): express.Express {
       limit: context.config.server.jsonBodyLimit,
     }),
   );
+  app.use(createOrdersRouter(context));
 
-  app.use((_request, response) => {
-    response.status(404).json({
-      message: 'Route not found.',
-    });
-  });
+  app.use(createNotFoundMiddleware());
+  app.use(createErrorHandlerMiddleware(context.logger));
 
   return app;
 }
