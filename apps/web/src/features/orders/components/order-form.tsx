@@ -6,6 +6,7 @@ import type {
   OrderFormSubmissionState,
   OrderItemDraft,
 } from '../hooks/use-order-form';
+import { VirtualizedList } from '../../../shared/components/virtualized-list';
 import { OrderItemRow } from './order-item-row';
 import { OrderResultPanel } from './order-result-panel';
 
@@ -99,8 +100,14 @@ export function OrderForm({
             </button>
           </div>
 
-          <div className="items-stack">
-            {items.map((item, index) => (
+          <VirtualizedList
+            className="items-stack"
+            estimateItemHeight={168}
+            gap={14}
+            getItemKey={(item) => item.key}
+            items={items}
+            overscan={4}
+            renderItem={(item, index) => (
               <OrderItemRow
                 canRemove={items.length > 1}
                 errorId={fieldErrors[`items[${index}].id`]}
@@ -114,8 +121,10 @@ export function OrderForm({
                 onQuantityChange={onItemQuantityChange}
                 onRemove={onRemoveItem}
               />
-            ))}
-          </div>
+            )}
+            virtualizedClassName="items-stack items-stack-virtualized"
+            virtualizationThreshold={7}
+          />
           <FieldError message={fieldErrors.items} />
         </section>
 

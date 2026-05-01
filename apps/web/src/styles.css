@@ -253,6 +253,26 @@ button {
   padding-right: 4px;
 }
 
+.items-stack-virtualized {
+  display: block;
+  height: min(44vh, 560px);
+  max-height: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.virtualized-list-inner {
+  position: relative;
+  width: 100%;
+}
+
+.virtualized-list-row {
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
 .item-row {
   border-radius: 20px;
   padding: 18px;
@@ -390,6 +410,54 @@ button {
   overflow-wrap: anywhere;
 }
 
+.error-boundary-shell {
+  align-items: center;
+  background: linear-gradient(180deg, #020603 0%, #0b1628 100%);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.error-boundary-card {
+  background: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 28px 90px rgba(2, 6, 3, 0.28);
+  color: var(--text-light-primary);
+  display: grid;
+  gap: 16px;
+  max-width: 640px;
+  padding: 32px;
+  width: 100%;
+}
+
+.error-boundary-card h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2rem, 4vw, 3.3rem);
+  line-height: 1.02;
+  margin: 0;
+}
+
+.error-boundary-copy {
+  color: var(--text-light-secondary);
+  margin: 0;
+}
+
+.error-boundary-message {
+  background: #f6f7fb;
+  border: 1px solid var(--border-light);
+  border-radius: 18px;
+  color: #183153;
+  overflow-wrap: anywhere;
+  padding: 14px 16px;
+}
+
+.error-boundary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 @media (min-width: 900px) {
   .page-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -431,5 +499,9 @@ button {
 
   .items-stack {
     max-height: none;
+  }
+
+  .items-stack-virtualized {
+    height: min(52vh, 480px);
   }
 }
