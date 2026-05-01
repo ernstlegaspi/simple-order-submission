@@ -10,7 +10,9 @@
   "scripts": {
     "build": "npm run build --workspace @simple-order/api && npm run build --workspace @simple-order/web",
     "build:api": "npm run build --workspace @simple-order/api",
+    "build:web": "npm run build --workspace @simple-order/web",
     "dev:api": "npm run dev --workspace @simple-order/api",
+    "dev:web": "npm run dev --workspace @simple-order/web",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings=0",
