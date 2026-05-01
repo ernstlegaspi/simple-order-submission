@@ -8,9 +8,13 @@
     "packages/*"
   ],
   "scripts": {
+    "build": "npm run build --workspace @simple-order/api && npm run build --workspace @simple-order/web",
+    "build:api": "npm run build --workspace @simple-order/api",
+    "dev:api": "npm run dev --workspace @simple-order/api",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings=0",
+    "start:api": "npm run start --workspace @simple-order/api",
     "typecheck": "tsc -p apps/api/tsconfig.json --noEmit && tsc -p packages/shared/tsconfig.json --noEmit && tsc -p apps/web/tsconfig.json --noEmit"
   },
   "engines": {
